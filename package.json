@@ -1,7 +1,7 @@
 {
   "name": "@egiw/baileys",
   "type": "module",
-  "version": "7.0.0-custom.1",
+  "version": "7.0.0-rc.9",
   "description": "A WebSockets library for interacting with WhatsApp Web (Custom build with interactive messages support)",
   "keywords": [
     "whatsapp",
