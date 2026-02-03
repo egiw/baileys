@@ -240,6 +240,65 @@ export type TemplateMessageContent = {
 	headerType?: 1 | 2 | 3 | 4 | 5
 } & Contextable
 
+// Interactive Messages Types (Tier 2)
+export type InteractiveMessageHeader = {
+	title: string
+	subtitle?: string
+	hasMediaAttachment?: boolean
+	imageMessage?: proto.Message.IImageMessage
+	videoMessage?: proto.Message.IVideoMessage
+	documentMessage?: proto.Message.IDocumentMessage
+}
+
+export type InteractiveMessageBody = {
+	text: string
+}
+
+export type InteractiveMessageFooter = {
+	text: string
+}
+
+export type NativeFlowButton = {
+	name: string
+	buttonParamsJson: string
+}
+
+export type InteractiveMessageContent = {
+	header?: InteractiveMessageHeader
+	body: InteractiveMessageBody
+	footer?: InteractiveMessageFooter
+	nativeFlowMessage?: {
+		buttons: NativeFlowButton[]
+		messageParamsJson?: string
+		messageVersion?: number
+	}
+} & Contextable
+
+// Helper function types for creating buttons
+export type QuickReplyButtonParams = {
+	display_text: string
+	id: string
+}
+
+export type ListMessageContent = {
+	header?: string
+	body: string
+	footer?: string
+	buttonText: string
+	sections: ListSection[]
+} & Contextable
+
+export type ListSection = {
+	title: string
+	rows: ListRow[]
+}
+
+export type ListRow = {
+	title: string
+	description?: string
+	rowId: string
+}
+
 export type GroupInviteInfo = {
 	inviteCode: string
 	inviteExpiration: number
@@ -291,6 +350,12 @@ export type AnyRegularMessageContent = (
 	  }
 	| {
 			templateButtons: TemplateMessageContent
+	  }
+	| {
+			interactiveMessage: InteractiveMessageContent
+	  }
+	| {
+			listMessage: ListMessageContent
 	  }
 	| {
 			pin: WAMessageKey

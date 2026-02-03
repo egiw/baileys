@@ -89,6 +89,71 @@ const MessageTypeProto = {
  */
 export const extractUrlFromText = (text: string) => text.match(URL_REGEX)?.[0]
 
+// ============================================
+// BAILEYS CUSTOM v7 - Button Helper Functions
+// ============================================
+
+/**
+ * Create a quick reply button for Interactive Messages (Tier 2)
+ * @param displayText - Text shown on the button
+ * @param id - Unique button ID for handling response
+ */
+export const createQuickReplyButton = (displayText: string, id: string) => {
+	return {
+		name: 'quick_reply',
+		buttonParamsJson: JSON.stringify({
+			display_text: displayText,
+			id: id
+		})
+	}
+}
+
+/**
+ * Create a URL button for Interactive Messages (Tier 2)
+ * @param displayText - Text shown on the button
+ * @param url - URL to open when clicked
+ */
+export const createUrlButton = (displayText: string, url: string) => {
+	return {
+		name: 'cta_url',
+		buttonParamsJson: JSON.stringify({
+			display_text: displayText,
+			url: url,
+			merchant_url: url
+		})
+	}
+}
+
+/**
+ * Create a call button for Interactive Messages (Tier 2)
+ * @param displayText - Text shown on the button
+ * @param phoneNumber - Phone number to call (with country code)
+ */
+export const createCallButton = (displayText: string, phoneNumber: string) => {
+	return {
+		name: 'cta_call',
+		buttonParamsJson: JSON.stringify({
+			display_text: displayText,
+			phone_number: phoneNumber
+		})
+	}
+}
+
+/**
+ * Create a copy code button for Interactive Messages (Tier 2)
+ * @param displayText - Text shown on the button
+ * @param copyCode - Code to copy to clipboard
+ */
+export const createCopyButton = (displayText: string, copyCode: string) => {
+	return {
+		name: 'cta_copy',
+		buttonParamsJson: JSON.stringify({
+			display_text: displayText,
+			copy_code: copyCode
+		})
+	}
+}
+
 export const generateLinkPreviewIfRequired = async (
 	text: string,
 	getUrlInfo: MessageGenerationOptions['getUrlInfo'],
@@ -583,6 +648,60 @@ export const generateWAMessageContent = async (
 		}
 		if (templateMsg.contextInfo) {
 			m.templateMessage.contextInfo = templateMsg.contextInfo
+		}
+	} else if (hasNonNullishProperty(message, 'interactiveMessage')) {
+		// Interactive Messages (Tier 2 - NativeFlowMessage)
+		const interactive = message.interactiveMessage
+		
+		m.viewOnceMessage = {
+			message: {
+				interactiveMessage: {
+					header: interactive.header ? {
+						title: interactive.header.title,
+						subtitle: interactive.header.subtitle,
+						hasMediaAttachment: interactive.header.hasMediaAttachment,
+						...(interactive.header.imageMessage && { imageMessage: interactive.header.imageMessage }),
+						...(interactive.header.videoMessage && { videoMessage: interactive.header.videoMessage }),
+						...(interactive.header.documentMessage && { documentMessage: interactive.header.documentMessage })
+					} : undefined,
+					body: {
+						text: interactive.body.text
+					},
+					footer: interactive.footer ? {
+						text: interactive.footer.text
+					} : undefined,
+					nativeFlowMessage: interactive.nativeFlowMessage ? {
+						buttons: interactive.nativeFlowMessage.buttons,
+						messageParamsJson: interactive.nativeFlowMessage.messageParamsJson,
+						messageVersion: interactive.nativeFlowMessage.messageVersion || 3
+					} : undefined,
+					contextInfo: interactive.contextInfo
+				}
+			}
+		}
+	} else if (hasNonNullishProperty(message, 'listMessage')) {
+		// List Messages (Tier 2)
+		const listMsg = message.listMessage
+		
+		m.viewOnceMessage = {
+			message: {
+				listMessage: {
+					title: listMsg.header,
+					description: listMsg.body,
+					footerText: listMsg.footer,
+					buttonText: listMsg.buttonText,
+					listType: proto.Message.ListMessage.ListType.SINGLE_SELECT,
+					sections: listMsg.sections.map(section => ({
+						title: section.title,
+						rows: section.rows.map(row => ({
+							title: row.title,
+							description: row.description,
+							rowId: row.rowId
+						}))
+					})),
+					contextInfo: listMsg.contextInfo
+				}
+			}
 		}
 	} else if (hasNonNullishProperty(message, 'event')) {
 		m.eventMessage = {}
