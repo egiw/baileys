@@ -1,18 +1,18 @@
 {
-  "name": "baileys",
+  "name": "@egiw/baileys",
   "type": "module",
-  "version": "7.0.0-rc.9",
-  "description": "A WebSockets library for interacting with WhatsApp Web",
+  "version": "7.0.0-custom.1",
+  "description": "A WebSockets library for interacting with WhatsApp Web (Custom build with interactive messages support)",
   "keywords": [
     "whatsapp",
     "automation"
   ],
-  "homepage": "https://github.com/WhiskeySockets/Baileys/",
+  "homepage": "https://github.com/egiw/baileys",
   "repository": {
-    "url": "git@github.com:WhiskeySockets/Baileys.git"
+    "url": "git@github.com:egiw/baileys.git"
   },
   "license": "MIT",
-  "author": "Rajeh Taher",
+  "author": "Rajeh Taher (Modified by egiw)",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
