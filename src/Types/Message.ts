@@ -299,6 +299,23 @@ export type ListRow = {
 	rowId: string
 }
 
+// Carousel Messages Types (Tier 3)
+export type CarouselCard = {
+	header?: InteractiveMessageHeader
+	body: InteractiveMessageBody
+	footer?: InteractiveMessageFooter
+	nativeFlowMessage?: {
+		buttons: NativeFlowButton[]
+		messageParamsJson?: string
+	}
+}
+
+export type CarouselMessageContent = {
+	cards: CarouselCard[]
+	messageVersion?: number
+	carouselCardType?: 1 | 2 // 1 = HSCROLL_CARDS, 2 = IMAGE_CARDS
+} & Contextable
+
 export type GroupInviteInfo = {
 	inviteCode: string
 	inviteExpiration: number
@@ -356,6 +373,9 @@ export type AnyRegularMessageContent = (
 	  }
 	| {
 			listMessage: ListMessageContent
+	  }
+	| {
+			carouselMessage: CarouselMessageContent
 	  }
 	| {
 			pin: WAMessageKey

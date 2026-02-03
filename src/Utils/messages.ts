@@ -703,6 +703,41 @@ export const generateWAMessageContent = async (
 				}
 			}
 		}
+	} else if (hasNonNullishProperty(message, 'carouselMessage')) {
+		// Carousel Messages (Tier 3)
+		const carousel = message.carouselMessage
+		
+		m.viewOnceMessage = {
+			message: {
+				interactiveMessage: {
+					carouselMessage: {
+						cards: carousel.cards.map(card => ({
+							header: card.header ? {
+								title: card.header.title,
+								subtitle: card.header.subtitle,
+								hasMediaAttachment: card.header.hasMediaAttachment,
+								...(card.header.imageMessage && { imageMessage: card.header.imageMessage }),
+								...(card.header.videoMessage && { videoMessage: card.header.videoMessage }),
+								...(card.header.documentMessage && { documentMessage: card.header.documentMessage })
+							} : undefined,
+							body: {
+								text: card.body.text
+							},
+							footer: card.footer ? {
+								text: card.footer.text
+							} : undefined,
+							nativeFlowMessage: card.nativeFlowMessage ? {
+								buttons: card.nativeFlowMessage.buttons,
+								messageParamsJson: card.nativeFlowMessage.messageParamsJson
+							} : undefined
+						})),
+						messageVersion: carousel.messageVersion || 2,
+						carouselCardType: carousel.carouselCardType || 1
+					},
+					contextInfo: carousel.contextInfo
+				}
+			}
+		}
 	} else if (hasNonNullishProperty(message, 'event')) {
 		m.eventMessage = {}
 		const startTime = Math.floor(message.event.startDate.getTime() / 1000)
