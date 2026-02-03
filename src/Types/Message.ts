@@ -203,6 +203,43 @@ export type ButtonReplyInfo = {
 	index: number
 }
 
+// Button Messages Types (Tier 1)
+export type Button = {
+	buttonId: string
+	buttonText: { displayText: string }
+	type: 1
+}
+
+export type ButtonsMessageContent = {
+	text: string
+	footer?: string
+	buttons: Button[]
+	headerType?: 1 | 2 | 3 | 4 | 5
+} & Contextable
+
+export type TemplateButton = {
+	index: number
+	quickReplyButton?: {
+		displayText: string
+		id: string
+	}
+	urlButton?: {
+		displayText: string
+		url: string
+	}
+	callButton?: {
+		displayText: string
+		phoneNumber: string
+	}
+}
+
+export type TemplateMessageContent = {
+	text: string
+	footer?: string
+	templateButtons: TemplateButton[]
+	headerType?: 1 | 2 | 3 | 4 | 5
+} & Contextable
+
 export type GroupInviteInfo = {
 	inviteCode: string
 	inviteExpiration: number
@@ -248,6 +285,12 @@ export type AnyRegularMessageContent = (
 	  }
 	| {
 			listReply: Omit<proto.Message.IListResponseMessage, 'contextInfo'>
+	  }
+	| {
+			buttons: ButtonsMessageContent
+	  }
+	| {
+			templateButtons: TemplateMessageContent
 	  }
 	| {
 			pin: WAMessageKey

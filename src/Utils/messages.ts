@@ -526,6 +526,64 @@ export const generateWAMessageContent = async (
 		})
 	} else if (hasNonNullishProperty(message, 'listReply')) {
 		m.listResponseMessage = { ...message.listReply }
+	} else if (hasNonNullishProperty(message, 'buttons')) {
+		// Regular Button Messages (Tier 1)
+		const buttonsMessage = message.buttons
+		m.buttonsMessage = {
+			contentText: buttonsMessage.text,
+			footerText: buttonsMessage.footer,
+			buttons: buttonsMessage.buttons.map(btn => ({
+				buttonId: btn.buttonId,
+				buttonText: { displayText: btn.buttonText.displayText },
+				type: btn.type
+			})),
+			headerType: buttonsMessage.headerType || 1
+		}
+		if (buttonsMessage.contextInfo) {
+			m.buttonsMessage.contextInfo = buttonsMessage.contextInfo
+		}
+	} else if (hasNonNullishProperty(message, 'templateButtons')) {
+		// Template Button Messages (Tier 1)
+		const templateMsg = message.templateButtons
+		const hydratedButtons = templateMsg.templateButtons.map(btn => {
+			if (btn.quickReplyButton) {
+				return {
+					index: btn.index,
+					quickReplyButton: {
+						displayText: btn.quickReplyButton.displayText,
+						id: btn.quickReplyButton.id
+					}
+				}
+			} else if (btn.urlButton) {
+				return {
+					index: btn.index,
+					urlButton: {
+						displayText: btn.urlButton.displayText,
+						url: btn.urlButton.url
+					}
+				}
+			} else if (btn.callButton) {
+				return {
+					index: btn.index,
+					callButton: {
+						displayText: btn.callButton.displayText,
+						phoneNumber: btn.callButton.phoneNumber
+					}
+				}
+			}
+			return btn
+		})
+
+		m.templateMessage = {
+			hydratedTemplate: {
+				hydratedContentText: templateMsg.text,
+				hydratedFooterText: templateMsg.footer,
+				hydratedButtons: hydratedButtons
+			}
+		}
+		if (templateMsg.contextInfo) {
+			m.templateMessage.contextInfo = templateMsg.contextInfo
+		}
 	} else if (hasNonNullishProperty(message, 'event')) {
 		m.eventMessage = {}
 		const startTime = Math.floor(message.event.startDate.getTime() / 1000)
